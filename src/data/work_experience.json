@@ -1,0 +1,52 @@
+{
+  "WorkExperience": [
+    {
+      "location":"4 Elements Integrated Design LTD.",
+      "job_title": "Web Developer / Energy Advisor",
+      "task_list": [
+        "Architected and implemented company's website",
+        "Deployment of HTAP/CBAT house modelling tool from NRCAN.",
+        "Automatization of performance reports"
+      ],
+      "dates": "Jan 2021 – Present",
+      "tech":"HTML, CSS, Javascript, ReactJS, Git, Ruby, VBA(Excel Macros)"
+    },
+
+    {
+      "location":"INPE - NATIONAL INSTITUTE FOR SPACE RESEARCH",
+      "job_title": "C++/QT SOFTWARE DEVELOPER, GIS ANALYST",
+      "task_list": [
+        "Developed application from concept to code, design user interface and scientific data visualization",
+        "Implemented the whole process related to science research under the project leader's supervision with the focus on GIS and Remote Sensing",
+        "Designed project's web site layout and logo",
+        "Convert hydrological model from IDL script to Qt/C++ with user interface and image viewport, increasing image processing speed to 70%"
+      ],
+      "dates": "October 2012 – July 2018",
+      "tech":"QtCreator, Python, C++, QGIS, HTML CSS, Git, Wordpress, Inkscape"
+    },
+
+    {
+      "location":"INPE - NATIONAL INSTITUTE FOR SPACE RESEARCH",
+      "job_title": "MATLAB/PYTHON/C SOFTWARE DEVELOPER, GIS ANALYST",
+      "task_list": [
+        "Wrote Matlab scripts to process raster/text data and visualize scientific results",
+        "Developed a computer remote controlled pan-tilt device",
+        "Circuit board (PCB) development,design and testing"
+      ],
+      "dates": "Mar 2008 – Feb 2012",
+      "tech":"Matlab, Python, C"
+    },
+
+    {
+      "location":"CORREIOS - BRAZILIAN POST AND TELEGRAPH CORPORATION",
+      "job_title": "HELP-DESK, TYPIST",
+      "task_list": [
+        "Provide first level contact and convey resolutions to customer issues related to internet navigation",
+        "Type correspondence, reports, text and other written material from rough drafts.",
+        "Feed database address for rural area mail correspondence"
+      ],
+      "dates": "Mar 2007 – Nov 2007",
+      "tech":""
+    }
+  ]
+}
