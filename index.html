@@ -1,0 +1,401 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .port { background: #0b0d0f; color: #e2e8f0; font-family: 'Space Grotesk', sans-serif; min-height: 100vh; }
+  .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(20,220,180,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(20,220,180,0.04) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+
+  /* NAV */
+  .nav-wrap { position: sticky; top: 0; z-index: 200; background: rgba(11,13,15,0.95); backdrop-filter: blur(10px); border-bottom: 0.5px solid rgba(20,220,180,0.15); }
+  .nav-inner { max-width: 900px; margin: 0 auto; padding: 1.1rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #14dcb4; letter-spacing: 0.08em; }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a { font-size: 13px; color: #94a3b8; text-decoration: none; letter-spacing: 0.05em; transition: color 0.2s; cursor: pointer; }
+  .nav-links a:hover, .nav-links a.active { color: #14dcb4; }
+
+  /* HAMBURGER */
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+  .hamburger span { display: block; width: 22px; height: 1.5px; background: #94a3b8; transition: transform 0.25s ease, opacity 0.25s ease, background 0.2s; }
+  .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); background: #14dcb4; }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); background: #14dcb4; }
+
+  /* MOBILE MENU DRAWER */
+  .mobile-menu {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 150;
+    background: rgba(11,13,15,0.98);
+    backdrop-filter: blur(12px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+  .mobile-menu.open { opacity: 1; transform: translateY(0); pointer-events: all; }
+  .mobile-menu a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem; color: #64748b; text-decoration: none;
+    letter-spacing: 0.12em; cursor: pointer;
+    transition: color 0.2s;
+  }
+  .mobile-menu a:hover { color: #14dcb4; }
+  .mobile-menu-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(20,220,180,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(20,220,180,0.04) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+  .mobile-menu-index { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(20,220,180,0.3); letter-spacing: 0.2em; margin-bottom: 0.25rem; text-align: center; }
+
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .mobile-menu { display: flex; }
+  }
+
+  /* PAGE */
+  .page-content { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 1; }
+
+  .hero { padding: 3.5rem 0 3rem; position: relative; }
+  .crosshair-wrap { position: absolute; top: 2rem; right: 0; width: 140px; height: 140px; opacity: 0.4; }
+  @media (max-width: 480px) { .crosshair-wrap { width: 80px; height: 80px; top: 1rem; opacity: 0.25; } }
+  .ch-svg { width: 100%; height: 100%; animation: ch-spin 24s linear infinite; }
+  @keyframes ch-spin { to { transform: rotate(360deg); } }
+  .ch-inner { animation: ch-spin 12s linear infinite reverse; }
+  .pulse-ring { animation: pulse 3s ease-in-out infinite; transform-origin: 100px 100px; }
+  @keyframes pulse { 0%,100% { opacity: 0.2; transform: scale(0.92); } 50% { opacity: 0.7; transform: scale(1.04); } }
+  .hero-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #14dcb4; letter-spacing: 0.12em; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+  .hero-eyebrow::before { content: ''; display: inline-block; width: 16px; height: 1px; background: #14dcb4; flex-shrink: 0; }
+  h1 { font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; color: #f0f6ff; margin-bottom: 1.1rem; }
+  h1 span { color: #14dcb4; }
+  .hero-sub { font-size: 0.9rem; color: #64748b; line-height: 1.75; max-width: 480px; margin-bottom: 1.75rem; }
+  .hero-cta { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.55rem 1.1rem; border: 0.5px solid #14dcb4; color: #14dcb4; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.05em; cursor: pointer; background: transparent; transition: background 0.2s; }
+  .hero-cta:hover { background: rgba(20,220,180,0.08); }
+
+  .section-anchor { display: block; height: 0; }
+  .section-divider { display: flex; align-items: center; gap: 1rem; margin: 0 0 1.5rem; padding-top: 0.75rem; }
+  .section-divider span { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #14dcb4; letter-spacing: 0.12em; white-space: nowrap; }
+  .section-divider::after { content: ''; flex: 1; height: 0.5px; background: rgba(20,220,180,0.15); }
+  .section { padding-bottom: 2.5rem; }
+
+  /* PROJECTS */
+  .projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: rgba(20,220,180,0.08); border: 0.5px solid rgba(20,220,180,0.12); }
+  @media (max-width: 500px) { .projects-grid { grid-template-columns: 1fr; } }
+  .proj-card { background: #0b0d0f; padding: 1.25rem; position: relative; transition: background 0.2s; cursor: pointer; }
+  .proj-card:hover { background: rgba(20,220,180,0.05); }
+  .proj-card:hover .proj-corner { border-color: rgba(20,220,180,0.7); }
+  .proj-card:hover .proj-name { color: #14dcb4; }
+  .proj-corner { position: absolute; top: 0.9rem; right: 0.9rem; width: 10px; height: 10px; border-top: 0.5px solid rgba(20,220,180,0.3); border-right: 0.5px solid rgba(20,220,180,0.3); transition: border-color 0.2s; }
+  .proj-index { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(20,220,180,0.35); letter-spacing: 0.15em; margin-bottom: 0.6rem; }
+  .proj-type { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #475569; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+  .proj-name { font-size: 0.95rem; font-weight: 600; color: #f0f6ff; margin-bottom: 0.4rem; transition: color 0.2s; }
+  .proj-desc { font-size: 12.5px; color: #475569; line-height: 1.6; margin-bottom: 0.85rem; }
+  .proj-stack { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 0.65rem; }
+  .proj-tag { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #14dcb4; padding: 2px 6px; border: 0.5px solid rgba(20,220,180,0.25); }
+  .click-hint { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: rgba(20,220,180,0.3); letter-spacing: 0.08em; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(7,9,11,0.88); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal { background: #0f1215; border: 0.5px solid rgba(20,220,180,0.2); width: 100%; max-width: 620px; max-height: 88vh; overflow-y: auto; position: relative; transform: translateY(16px); transition: transform 0.28s ease; border-radius: 2px; }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-header { padding: 1.5rem 1.5rem 1rem; border-bottom: 0.5px solid rgba(255,255,255,0.06); position: sticky; top: 0; background: #0f1215; z-index: 1; }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: 0.5px solid rgba(255,255,255,0.1); color: #64748b; cursor: pointer; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: border-color 0.2s, color 0.2s; font-family: 'JetBrains Mono', monospace; }
+  .modal-close:hover { border-color: #14dcb4; color: #14dcb4; }
+  .modal-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(20,220,180,0.5); letter-spacing: 0.15em; margin-bottom: 0.4rem; }
+  .modal-title { font-size: 1.25rem; font-weight: 600; color: #f0f6ff; margin-bottom: 0.25rem; }
+  .modal-subtitle { font-size: 12px; color: #475569; font-style: italic; }
+  .modal-body { padding: 1.25rem 1.5rem 1.5rem; }
+  .modal-section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #14dcb4; letter-spacing: 0.12em; margin-bottom: 0.55rem; margin-top: 1.25rem; }
+  .modal-section-label:first-child { margin-top: 0; }
+  .modal-desc { font-size: 13.5px; color: #94a3b8; line-height: 1.75; }
+  .modal-stack { display: flex; flex-wrap: wrap; gap: 6px; }
+  .modal-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #14dcb4; padding: 3px 9px; border: 0.5px solid rgba(20,220,180,0.3); }
+  .modal-role { font-size: 13px; color: #94a3b8; line-height: 1.7; }
+  .modal-highlights { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+  .modal-highlights li { font-size: 13px; color: #64748b; line-height: 1.65; padding-left: 1.1rem; position: relative; }
+  .modal-highlights li::before { content: '›'; position: absolute; left: 0; color: #14dcb4; font-size: 14px; top: 0; }
+  .modal-divider { height: 0.5px; background: rgba(255,255,255,0.06); margin: 1rem 0 0; }
+
+  /* EXP */
+  .exp-item { display: grid; grid-template-columns: 150px 1fr; gap: 1.5rem; padding: 1.25rem 0; border-top: 0.5px solid rgba(255,255,255,0.06); }
+  @media (max-width: 480px) { .exp-item { grid-template-columns: 1fr; gap: 0.6rem; } }
+  .exp-dates { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #14dcb4; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+  .exp-org { font-size: 11px; color: #475569; line-height: 1.4; }
+  .exp-role { font-size: 0.9rem; font-weight: 500; color: #e2e8f0; margin-bottom: 0.65rem; }
+  .exp-bullets { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+  .exp-bullets li { font-size: 12.5px; color: #64748b; line-height: 1.6; padding-left: 1rem; position: relative; }
+  .exp-bullets li::before { content: '—'; position: absolute; left: 0; color: rgba(20,220,180,0.35); font-size: 10px; top: 3px; }
+
+  /* SKILLS */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; border: 0.5px solid rgba(255,255,255,0.06); }
+  .skill-cell { padding: 1rem; border: 0.5px solid rgba(255,255,255,0.06); }
+  .skill-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #14dcb4; letter-spacing: 0.12em; margin-bottom: 0.5rem; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag { font-size: 11px; color: #94a3b8; padding: 2px 6px; border: 0.5px solid rgba(255,255,255,0.1); }
+
+  /* CONTACT */
+  .contact-section { padding: 1.5rem 0 2.5rem; border-top: 0.5px solid rgba(20,220,180,0.1); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+  .contact-line { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #475569; }
+  .contact-link { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #14dcb4; text-decoration: none; }
+  .contact-link:hover { text-decoration: underline; }
+</style>
+
+<div class="port">
+  <div class="grid-bg"></div>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-grid"></div>
+    <div>
+      <div class="mobile-menu-index">01</div>
+      <a onclick="mobileNav('work')">work</a>
+    </div>
+    <div>
+      <div class="mobile-menu-index">02</div>
+      <a onclick="mobileNav('experience')">experience</a>
+    </div>
+    <div>
+      <div class="mobile-menu-index">03</div>
+      <a onclick="mobileNav('contact')">contact</a>
+    </div>
+  </div>
+
+  <div class="nav-wrap">
+    <div class="nav-inner">
+      <div class="logo">JS // portfolio</div>
+      <div class="nav-links">
+        <a onclick="navScrollTo('work')">work</a>
+        <a onclick="navScrollTo('experience')">experience</a>
+        <a onclick="navScrollTo('contact')">contact</a>
+      </div>
+      <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="hero">
+      <div class="crosshair-wrap">
+        <svg class="ch-svg" viewBox="0 0 200 200" fill="none">
+          <circle class="pulse-ring" cx="100" cy="100" r="80" stroke="#14dcb4" stroke-width="0.5" stroke-dasharray="4 8"/>
+          <circle cx="100" cy="100" r="60" stroke="#14dcb4" stroke-width="0.5" opacity="0.3"/>
+          <g class="ch-inner"><circle cx="100" cy="100" r="40" stroke="#14dcb4" stroke-width="0.5" stroke-dasharray="2 6"/></g>
+          <line x1="100" y1="10" x2="100" y2="40" stroke="#14dcb4" stroke-width="0.5"/>
+          <line x1="100" y1="160" x2="100" y2="190" stroke="#14dcb4" stroke-width="0.5"/>
+          <line x1="10" y1="100" x2="40" y2="100" stroke="#14dcb4" stroke-width="0.5"/>
+          <line x1="160" y1="100" x2="190" y2="100" stroke="#14dcb4" stroke-width="0.5"/>
+          <circle cx="100" cy="100" r="3" fill="#14dcb4"/>
+          <text x="106" y="88" font-family="JetBrains Mono,monospace" font-size="7" fill="#14dcb4" opacity="0.6">-15.623</text>
+          <text x="106" y="98" font-family="JetBrains Mono,monospace" font-size="7" fill="#14dcb4" opacity="0.6">-47.481</text>
+        </svg>
+      </div>
+      <div class="hero-eyebrow">C++ · GIS · Remote Sensing · Sci. Viz</div>
+      <h1>Jeison<br>Santiago<span>.</span></h1>
+      <p class="hero-sub">Software developer and GIS analyst with a decade building scientific tools at Brazil's National Institute for Space Research — from satellite data pipelines to PCB design.</p>
+      <button class="hero-cta" onclick="navScrollTo('work')">view work →</button>
+    </div>
+
+    <span id="work" class="section-anchor"></span>
+    <div class="section-divider"><span>// projects</span></div>
+    <div class="section">
+      <div class="projects-grid">
+        <div class="proj-card" onclick="openModal(0)">
+          <div class="proj-corner"></div>
+          <div class="proj-index">01</div>
+          <div class="proj-type">Web · Frontend</div>
+          <div class="proj-name">Website 4 Elements</div>
+          <p class="proj-desc">Minimalistic website built from scratch, emphasizing simplicity and ease of navigation.</p>
+          <div class="proj-stack"><span class="proj-tag">ReactJS</span><span class="proj-tag">Styled Components</span></div>
+          <div class="click-hint">tap for details →</div>
+        </div>
+        <div class="proj-card" onclick="openModal(1)">
+          <div class="proj-corner"></div>
+          <div class="proj-index">02</div>
+          <div class="proj-type">Scientific · Simulation</div>
+          <div class="proj-name">Wind Trek</div>
+          <p class="proj-desc">Particle trajectory simulator using a Lagrangian algorithm for precise dynamics visualization.</p>
+          <div class="proj-stack"><span class="proj-tag">C++</span><span class="proj-tag">Qt</span><span class="proj-tag">MySQL</span></div>
+          <div class="click-hint">tap for details →</div>
+        </div>
+        <div class="proj-card" onclick="openModal(2)">
+          <div class="proj-corner"></div>
+          <div class="proj-index">03</div>
+          <div class="proj-type">GIS · Hydrology</div>
+          <div class="proj-name">HAND Model</div>
+          <p class="proj-desc">Height Above the Nearest Drainage — terrain descriptor tool from satellite imagery.</p>
+          <div class="proj-stack"><span class="proj-tag">C++</span><span class="proj-tag">Qt</span><span class="proj-tag">GDAL</span><span class="proj-tag">EigenC++</span></div>
+          <div class="click-hint">tap for details →</div>
+        </div>
+        <div class="proj-card" onclick="openModal(3)">
+          <div class="proj-corner"></div>
+          <div class="proj-index">04</div>
+          <div class="proj-type">Hardware · Systems</div>
+          <div class="proj-name">Remote TLE Observation</div>
+          <p class="proj-desc">Pan-tilt camera system for capturing Transient Luminous Events with custom PCB hardware.</p>
+          <div class="proj-stack"><span class="proj-tag">C</span><span class="proj-tag">Arduino</span><span class="proj-tag">Python</span><span class="proj-tag">PHP</span></div>
+          <div class="click-hint">tap for details →</div>
+        </div>
+      </div>
+    </div>
+
+    <span id="experience" class="section-anchor"></span>
+    <div class="section-divider"><span>// experience</span></div>
+    <div class="section">
+      <div class="exp-item">
+        <div>
+          <div class="exp-dates">Oct 2012 – Jul 2017</div>
+          <div class="exp-org">INPE — National Institute<br>for Space Research</div>
+        </div>
+        <div>
+          <div class="exp-role">C++ / Qt Developer & GIS Analyst</div>
+          <ul class="exp-bullets">
+            <li>Built desktop app for raster data manipulation and scientific visualization.</li>
+            <li>Architected GIS and remote sensing tools under senior research scientist supervision.</li>
+            <li>Worked directly with end users to design coherent, intuitive workflows.</li>
+            <li>Designed the project website and logo for a unified visual identity.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="exp-item">
+        <div>
+          <div class="exp-dates">Mar 2008 – Feb 2012</div>
+          <div class="exp-org">INPE — National Institute<br>for Space Research</div>
+        </div>
+        <div>
+          <div class="exp-role">Matlab / Python / C Developer & GIS Analyst</div>
+          <ul class="exp-bullets">
+            <li>Developed Matlab scripts for raster and text data processing.</li>
+            <li>Engineered a remote-controlled pan-tilt device using Arduino and solid-state relays.</li>
+            <li>Designed and tested custom PCBs for scientific data collection.</li>
+            <li>Installed TLE-capturing devices with weather station staff.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"><span>// skills</span></div>
+    <div class="section">
+      <div class="skills-grid">
+        <div class="skill-cell">
+          <div class="skill-label">LANGUAGES</div>
+          <div class="skill-tags"><span class="tag">C++</span><span class="tag">Python</span><span class="tag">Matlab</span><span class="tag">C</span></div>
+        </div>
+        <div class="skill-cell">
+          <div class="skill-label">FRAMEWORKS</div>
+          <div class="skill-tags"><span class="tag">Qt</span><span class="tag">ReactJS</span><span class="tag">Arduino</span></div>
+        </div>
+        <div class="skill-cell">
+          <div class="skill-label">DOMAINS</div>
+          <div class="skill-tags"><span class="tag">GIS</span><span class="tag">Remote sensing</span><span class="tag">Sci. viz</span></div>
+        </div>
+        <div class="skill-cell">
+          <div class="skill-label">HARDWARE</div>
+          <div class="skill-tags"><span class="tag">PCB design</span><span class="tag">Embedded</span></div>
+        </div>
+      </div>
+    </div>
+
+    <span id="contact" class="section-anchor"></span>
+    <div class="contact-section">
+      <div class="contact-line">// ready to build something</div>
+      <a class="contact-link" href="mailto:hello@jeisonsantiago.com">get in touch →</a>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-eyebrow" id="mEyebrow"></div>
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-subtitle" id="mSubtitle"></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section-label">// overview</div>
+      <p class="modal-desc" id="mDesc"></p>
+      <div class="modal-divider"></div>
+      <div class="modal-section-label">// stack</div>
+      <div class="modal-stack" id="mStack"></div>
+      <div class="modal-divider"></div>
+      <div class="modal-section-label">// role</div>
+      <p class="modal-role" id="mRole"></p>
+      <div class="modal-divider"></div>
+      <div class="modal-section-label">// key highlights</div>
+      <ul class="modal-highlights" id="mHighlights"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+const projects = [
+  { index:'01', type:'Web · Frontend', name:'Website 4 Elements', subtitle:'Minimal Clean Website', desc:'A minimalistic, clean website designed entirely from scratch, emphasizing simplicity and ease of navigation. Every decision was deliberate — stripping back to essentials while maintaining a polished, modern feel.', stack:['ReactJS','Styled Components'], role:'Sole developer, responsible for both front-end design and implementation.', highlights:['Crafted a streamlined user interface with a focus on modern design principles.','Used Styled Components for modular and reusable styles, enhancing code maintainability.','Built with ReactJS, allowing for dynamic and efficient rendering.'] },
+  { index:'02', type:'Scientific · Simulation', name:'Wind Trek', subtitle:'Trajectory Particle Simulator', desc:'A particle simulator developed using a Lagrangian algorithm to track trajectory paths, providing insights into particle dynamics and behavior. Built for scientific research environments requiring high-precision visualization.', stack:['Qt Framework','C++','MySQL'], role:'Lead developer, responsible for the entire UI/UX using QGraphicsView and backend integration with MySQL.', highlights:['Built a custom Qt-based interface using QGraphicsView components, enabling interactive and responsive visualization of particle trajectories.','Implemented a Lagrangian algorithm for accurate particle tracking and simulation.','Integrated MySQL for storing and retrieving simulation data, enhancing data persistence and analysis.'] },
+  { index:'03', type:'GIS · Hydrology', name:'HAND Model', subtitle:'Hydrological Numerical Terrain Descriptor', desc:'The HAND (Height Above the Nearest Drainage) Model is a hydrological tool developed to generate numerical terrain descriptors, utilizing satellite imagery for terrain analysis. Supports environmental and geographical studies by processing raster data with high precision.', stack:['Qt Framework','C++','GDAL','EigenC++','MySQL'], role:'Sole developer, responsible for the UI using Qt Framework and data processing with GDAL.', highlights:['Developed a custom Qt-based interface for seamless user interaction, facilitating efficient terrain analysis and data visualization.','Utilized GDAL to manipulate raster satellite images, enabling complex terrain modeling and accurate drainage mapping.','Integrated EigenC++ for advanced matrix operations, improving computational performance in hydrological calculations.','Connected with MySQL for efficient storage and retrieval of processed data, supporting large datasets.'] },
+  { index:'04', type:'Hardware · Systems', name:'Remote TLE Observation', subtitle:'Controlled Camera System for Capturing Transient Luminous Events', desc:'A remotely controlled camera setup with pan-tilt functionality designed to capture TLEs (Transient Luminous Events). Integrates hardware and software to create a responsive system capable of tracking and photographing atmospheric phenomena.', stack:['C (PCB/Arduino)','Python','PHP','Bash'], role:'Developer and system integrator, handling both hardware and software components to enable remote control and image capture.', highlights:['Designed and programmed a PCB and Arduino-based system for controlling camera orientation and movement, allowing precise tracking of TLEs.','Developed a Web API using Python and PHP to enable remote control of the camera system, allowing for real-time adjustments and monitoring.','Used Bash scripting for automation and system maintenance tasks, enhancing operational efficiency.'] }
+];
+
+let menuOpen = false;
+
+function toggleMenu() {
+  menuOpen = !menuOpen;
+  document.getElementById('hamburger').classList.toggle('open', menuOpen);
+  const mm = document.getElementById('mobileMenu');
+  mm.classList.toggle('open', menuOpen);
+  document.body.style.overflow = menuOpen ? 'hidden' : '';
+}
+
+function mobileNav(id) {
+  toggleMenu();
+  setTimeout(() => navScrollTo(id), 280);
+}
+
+function navScrollTo(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const navHeight = document.querySelector('.nav-wrap').offsetHeight;
+  const top = el.getBoundingClientRect().top + window.scrollY - navHeight - 20;
+  window.scrollTo({ top, behavior: 'smooth' });
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const map = { work:0, experience:1, contact:2 };
+  const links = document.querySelectorAll('.nav-links a');
+  if (links[map[id]]) links[map[id]].classList.add('active');
+}
+
+function openModal(i) {
+  const p = projects[i];
+  document.getElementById('mEyebrow').textContent = p.index + ' // ' + p.type;
+  document.getElementById('mTitle').textContent = p.name;
+  document.getElementById('mSubtitle').textContent = p.subtitle;
+  document.getElementById('mDesc').textContent = p.desc;
+  document.getElementById('mRole').textContent = p.role;
+  document.getElementById('mStack').innerHTML = p.stack.map(s => `<span class="modal-tag">${s}</span>`).join('');
+  document.getElementById('mHighlights').innerHTML = p.highlights.map(h => `<li>${h}</li>`).join('');
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); if (menuOpen) toggleMenu(); } });
+
+window.addEventListener('scroll', () => {
+  const sections = ['work','experience','contact'];
+  const navH = document.querySelector('.nav-wrap').offsetHeight + 32;
+  let current = '';
+  sections.forEach(id => { const el = document.getElementById(id); if (el && el.getBoundingClientRect().top <= navH) current = id; });
+  const map = { work:0, experience:1, contact:2 };
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  if (current && map[current] !== undefined) document.querySelectorAll('.nav-links a')[map[current]]?.classList.add('active');
+});
+</script>
